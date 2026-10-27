@@ -57,6 +57,21 @@ fastboot boot Mu-x01a.img
 
 Rebooting puts you back in Android.
 
+## HakiOS
+
+`hakios/` has the UEFI side of [HakiOS](https://github.com/oosexgang/hackios-xnu-kernel) from its
+POCO X5 Pro port: the boot shim copies an "XNUP" payload appended after the FD to 0xF0000000, and
+when BDS has nothing to boot it hands over to the XNU loader. Without a payload, the loader only
+collects diagnostics (EL, CPU registers, framebuffer, memory map). On the X01A that log is shown on
+screen for 60 seconds before it resets, instead of being written to the `logdump` partition.
+
+```sh
+./apply.sh --hakios ~/Mu-Silicium
+cd ~/Mu-Silicium && python3 build_uefi.py -d x01a -r DEBUG
+python3 /path/to/tools/mkxnuimg.py ~/Mu-Silicium [-p payload.bin] -o xnu-x01a.img
+fastboot boot xnu-x01a.img
+```
+
 ## Adding another SM7250 phone
 
 1. Dump `xbl` from the phone and run `tools/extract_xbl.py` on it.
