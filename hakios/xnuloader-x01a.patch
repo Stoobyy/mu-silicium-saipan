@@ -1,0 +1,43 @@
+diff --git a/loader.c b/loader.c
+old mode 100755
+new mode 100644
+index ab5a781..b664e65
+--- a/loader.c
++++ b/loader.c
+@@ -551,6 +551,18 @@ static const struct platform platform_redwood = {
+ 	.small_cores = 0x0f,
+ };
+ 
++static const struct platform platform_x01a = {
++	/*
++	 * BALMUDA Phone (SM7250, lito): the same GIC addresses and the same core numbering (MPIDR
++	 * affinity 1, CPU0 is 0x81000000) as redwood, from the phone's own device tree.
++	 */
++	.name = "x01a", .io_base = 0x00400000, .io_size = 0x3FC00000,
++	.gic_dist = 0x17A00000, .gic_redist = 0x17A60000, .uart = 0, .log_other_cpu = 1,
++	.cores = 8, .core_shift = 8,
++	/* Cores 0-5 are Kryo 475 Silver (Cortex-A55, 1.8 GHz), 6-7 Kryo 475 Gold (Cortex-A76, 2.2/2.3 GHz). */
++	.small_cores = 0x3f,
++};
++
+ /* ------------------------------------------------------------------------ */
+ 
+ static void
+@@ -2432,7 +2444,7 @@ wdt_arm(void)
+ {
+ 	uint64_t ctl = 0, since = 0;
+ 
+-	if (PLAT != &platform_redwood) {
++	if (PLAT != &platform_redwood && PLAT != &platform_x01a) {
+ 		return; /* SMC is not routed anywhere useful on QEMU virt */
+ 	}
+ 	uint64_t st = smc_call(VIRT_WDT_STATUS, 0, 0, &ctl, &since);
+@@ -3932,6 +3944,8 @@ efi_main(efi_handle image, efi_system_table *st)
+ 		SCREEN.stride = GOP->mode->info->pixels_per_scanline * 4;
+ 		if (SCREEN.base == 0xE1000000ULL) {
+ 			PLAT = &platform_redwood;
++		} else if (SCREEN.base == 0xA0000000ULL && SCREEN.width == 1080 && SCREEN.height == 1920) {
++			PLAT = &platform_x01a;          /* the boot splash ABL leaves in "Display Reserved" */
+ 		} else {
+ 			ramfb_phone_screen();
+ 		}

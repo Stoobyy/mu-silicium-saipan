@@ -72,6 +72,19 @@ python3 /path/to/tools/mkxnuimg.py ~/Mu-Silicium [-p payload.bin] -o xnu-x01a.im
 fastboot boot xnu-x01a.img
 ```
 
+HakiOS's own loader (`xnuloader/` in its repo) needs an X01A platform entry, or it takes this phone
+for QEMU and pokes QEMU's fw_cfg address. `hakios/xnuloader-x01a.patch` adds it (same GIC and core
+numbering as the POCO, framebuffer at 0xA0000000). To build the USB loader image that `xl enter`
+would boot:
+
+```sh
+tools/build_loader.sh /path/to/hackios-xnu-kernel ~/Mu-Silicium out/xnu-usb.img
+fastboot boot out/xnu-usb.img      # then: fastboot getvar product  ->  xnuloader
+```
+
+The loader writes its log to the raw `logdump` partition, as on the POCO. On the X01A that
+partition is 64 MB and was all zeros; back it up first if yours isn't.
+
 ## Adding another SM7250 phone
 
 1. Dump `xbl` from the phone and run `tools/extract_xbl.py` on it.
