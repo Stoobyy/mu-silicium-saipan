@@ -4,7 +4,8 @@ Mu-Silicium (Project Silicium) support for the Snapdragon 765 / SM7250 ("Saipan"
 Upstream has no package for this SoC, so this adds one, plus the first device on it: the BALMUDA Phone
 (Kyocera X01A).
 
-Status: it builds. Booting on the phone is not tested yet.
+Status: boots on the X01A with `fastboot boot`. All drivers load and it reaches the Silicium
+boot screen. Nothing to boot into yet.
 
 ## What's here
 
