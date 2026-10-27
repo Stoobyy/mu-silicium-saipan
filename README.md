@@ -4,8 +4,8 @@ Mu-Silicium (Project Silicium) support for the Snapdragon 765 / SM7250 ("Saipan"
 Upstream has no package for this SoC, so this adds one, plus the first device on it: the BALMUDA Phone
 (Kyocera X01A).
 
-Status: boots on the X01A with `fastboot boot`. All drivers load and it reaches the Silicium
-boot screen. Nothing to boot into yet.
+Status: boots on the X01A with `fastboot boot`. With HakiOS on top (hakios/), iOS 16.5 boots to the
+home screen from RAM, single core, software rendering, no touch yet.
 
 ## What's here
 
