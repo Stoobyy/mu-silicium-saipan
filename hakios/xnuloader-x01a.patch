@@ -1,7 +1,7 @@
 diff --git a/loader.c b/loader.c
 old mode 100755
 new mode 100644
-index ab5a781..b664e65
+index ab5a781..aedb78a
 --- a/loader.c
 +++ b/loader.c
 @@ -551,6 +551,18 @@ static const struct platform platform_redwood = {
@@ -32,7 +32,37 @@ index ab5a781..b664e65
  		return; /* SMC is not routed anywhere useful on QEMU virt */
  	}
  	uint64_t st = smc_call(VIRT_WDT_STATUS, 0, 0, &ctl, &since);
-@@ -3932,6 +3944,8 @@ efi_main(efi_handle image, efi_system_table *st)
+@@ -3696,6 +3708,29 @@ fb_command(char *cmd)
+ 			staged_data = (const char *)(uintptr_t)SCREEN.base;
+ 			staged_len = (uint64_t)SCREEN.stride * SCREEN.height;
+ 			fb_reply("OKAY", "");
++		} else if (starts_with(cmd, "oem peek ")) {
++			/*
++			 * X01A: stage raw memory, "oem peek ADDR LEN" (hex). With no core for the loader to
++			 * watch the kernel from, this is how a hung kernel's log is read back after the reset,
++			 * if the RAM kept it.
++			 */
++			const char *a = cmd + 9;
++			uint64_t addr = parse_number(a, 16), len;
++
++			while (*a != ' ' && *a != 0) {
++				a++;
++			}
++			while (*a == ' ') {
++				a++;
++			}
++			len = parse_number(a, 16);
++			if (len == 0 || len > 0x4000000) {
++				fb_reply("FAIL", "usage: oem peek ADDR LEN (hex, LEN up to 4000000)");
++				return;
++			}
++			staged_data = (const char *)(uintptr_t)addr;
++			staged_len = len;
++			fb_reply("OKAY", "");
+ 		} else if (starts_with(cmd, "oem recording")) {
+ 			/* stage what the kernel's display driver recorded (boot-arg rec_secs) */
+ 			if (recording_data == NULL) {
+@@ -3932,6 +3967,8 @@ efi_main(efi_handle image, efi_system_table *st)
  		SCREEN.stride = GOP->mode->info->pixels_per_scanline * 4;
  		if (SCREEN.base == 0xE1000000ULL) {
  			PLAT = &platform_redwood;
