@@ -4,9 +4,8 @@ Mu-Silicium (Project Silicium) support for the Snapdragon 765 / SM7250 ("Saipan"
 Upstream has no package for this SoC, so this adds one, plus the first device on it: the BALMUDA Phone
 (Kyocera X01A).
 
-Status: boots on the X01A with `fastboot boot`. With HakiOS on top (hakios/), iOS 16.5 boots to the
-home screen from RAM on all 8 cores, with touch and the three buttons working. Rendering is in
-software; no sound, Wi-Fi or cellular.
+Status: boots on the X01A with `fastboot boot`. All drivers load and it reaches the Silicium boot
+screen. For iOS 16 on top of it, see [ios16-a101bm-x01a](https://github.com/Stoobyy/ios16-a101bm-x01a).
 
 ## What's here
 
@@ -58,53 +57,6 @@ fastboot boot Mu-x01a.img
 
 Rebooting puts you back in Android.
 
-## HakiOS
-
-`hakios/` has the UEFI side of [HakiOS](https://github.com/oosexgang/hackios-xnu-kernel) from its
-POCO X5 Pro port: the boot shim copies an "XNUP" payload appended after the FD to 0xF0000000, and
-when BDS has nothing to boot it hands over to the XNU loader. Without a payload, the loader only
-collects diagnostics (EL, CPU registers, framebuffer, memory map). On the X01A that log is shown on
-screen for 60 seconds before it resets, instead of being written to the `logdump` partition.
-
-```sh
-./apply.sh --hakios ~/Mu-Silicium
-cd ~/Mu-Silicium && python3 build_uefi.py -d x01a -r DEBUG
-python3 /path/to/tools/mkxnuimg.py ~/Mu-Silicium [-p payload.bin] -o xnu-x01a.img
-fastboot boot xnu-x01a.img
-```
-
-HakiOS's own loader (`xnuloader/` in its repo) needs an X01A platform entry, or it takes this phone
-for QEMU and pokes QEMU's fw_cfg address. `hakios/xnuloader-x01a.patch` adds it (same GIC and core
-numbering as the POCO, framebuffer at 0xA0000000). To build the USB loader image that `xl enter`
-would boot:
-
-```sh
-tools/build_loader.sh /path/to/hackios-xnu-kernel ~/Mu-Silicium out/xnu-usb.img
-fastboot boot out/xnu-usb.img      # then: fastboot getvar product  ->  xnuloader
-```
-
-`hakios/xnu-x01a.patch` is the kernel side (against HakiOS's `xnu/files`): the SM7250 has the
-architected timer on PPIs 1, 2, 3, 0, so the virtual timer is INTID 19, not 27. The kernel takes
-it from `vtimer_intid=`, which the loader passes on this phone, and stops that timer on the way
-back to UEFI. With it, iOS 16.5 boots to the Apple logo here.
-
-Touch and buttons are in the same patch. `bsd/dev/hakios.ilitek.c` is new: the Ilitek ILI7807S on
-I2C at 0x41. The bus's serial engine is set up for GPI DMA only, so for now it reads the chip by
-driving GPIO 6 and 7 by hand, polled from the interrupt line's latched edge. `hakios.buttons.c`
-gets a board table: power and volume up on the PM8150's power-on block, volume down on GPIO5 of
-the PM8150L. Both turn on with `hakios_board=x01a`, which the loader adds on this phone.
-
-```sh
-tools/apply_kernel.sh /path/to/hackios-xnu-kernel      # before or after its xnu/apply.sh
-```
-
-Kernel arguments that work here: `cpus=8 touchscreen=1 buttons=1 -v`. While a kernel runs on core 0
-leave USB alone (no `fastboot getvar` polling), or Windows resets the device and UEFI's USB driver
-can't recover once the kernel hands back.
-
-The loader writes its log to the raw `logdump` partition, as on the POCO. On the X01A that
-partition is 64 MB and was all zeros; back it up first if yours isn't.
-
 ## Adding another SM7250 phone
 
 1. Dump `xbl` from the phone and run `tools/extract_xbl.py` on it.
@@ -118,4 +70,3 @@ partition is 64 MB and was all zeros; back it up first if yours isn't.
 - The binaries in `Binaries/x01a` are Qualcomm/Kyocera firmware taken from the phone. They're here
   the same way Project Silicium ships device binaries.
 - Code copied or adapted from Mu-Silicium keeps its original license (BSD-2-Clause-Patent).
-- This is the UEFI base for running HakiOS on the BALMUDA Phone. That part isn't done yet.

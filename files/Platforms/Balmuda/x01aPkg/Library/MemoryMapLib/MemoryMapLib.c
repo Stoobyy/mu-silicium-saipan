@@ -31,9 +31,6 @@ gMemoryDescriptor[] = {
   {"Sched Heap",        0xA6A00000, 0x00400000, AddMem, SYS_MEM, SYS_MEM_CAP, BsData, WRITE_BACK_XN},
   {"DBI Dump",          0xA6E00000, 0x00F00000, AddMem, SYS_MEM, SYS_MEM_CAP, RtData, WRITE_BACK_XN},
 
-  // HakiOS: the boot shim copies an "XNUP" payload here (hakios/). Free DDR on this phone.
-  {"XNU Payload",       0xF0000000, 0x04000000, AddMem, SYS_MEM, SYS_MEM_CAP, Reserv, WRITE_BACK_XN},
-
   // Other Memory Regions
   {"AOP_SS_MSG_RAM",    0x0C300000, 0x00100000, NoHob,  MMAP_IO, INITIALIZED, Conv,   NS_DEVICE},
   {"IMEM Base",         0x14680000, 0x0002C000, NoHob,  MMAP_IO, INITIALIZED, Conv,   NS_DEVICE},
