@@ -7,7 +7,7 @@
   ENTRY_POINT                    = EfiEntry
 
 [Binaries.AARCH64]
-  PE32|FeatureEnablerDxe.efi|*
+  PE32|FeatureEnablerDxe.patched.efi|*
 
 [Depex]
   TRUE

@@ -2,8 +2,25 @@
 
 Extracted from the phone's own `xbl_a.img` (BOOT.XF.3.3.1-00060-SAIPANLAZ-1, ELF segment 11 =
 the UEFI FD at 0x9FC00000; inner FV gzip, GUID 1D301FE9-BE79-4353-91C2-D23BC959AE0C) and laid
-out by `tools/gen_binaries.py`. Every module keeps its original FFS GUID. Vendor firmware: not
-for redistribution.
+out by `tools/gen_binaries.py`. Every module keeps its original FFS GUID. This is Qualcomm and
+Kyocera firmware, shipped here the same way Project Silicium ships device binaries.
+
+## Patches
+
+### TzDxe
+
+- Reason: the stock UEFI already loaded the TZ applets before ABL. Loading them again fails with
+  Device Error and TzDxe asserts.
+- Patch: the "applets loaded" flag (0xD469) starts as TRUE.
+- Patch creator: [N1kroks](https://github.com/N1kroks/) (same patch as the SM8250 binaries)
+
+### FeatureEnablerDxe
+
+- Reason: DisplayFeatureEnablerInit turns the display clocks on again and the framebuffer is lost.
+- Patch: the function (0x1790) returns EFI_SUCCESS right away.
+- Patch creator: [N1kroks](https://github.com/N1kroks/) (same patch as the SM8250 binaries)
+
+## Modules
 
 | Module | Type | GUID |
 |---|---|---|
