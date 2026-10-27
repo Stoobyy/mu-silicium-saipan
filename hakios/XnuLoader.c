@@ -23,6 +23,7 @@
 #include <Library/UefiBootServicesTableLib.h>
 #include <Library/UefiRuntimeServicesTableLib.h>
 #include <Library/UefiLib.h>
+#include <Library/DebugLib.h>
 
 #include <Protocol/BlockIo.h>
 #include <Protocol/GraphicsOutput.h>
@@ -241,15 +242,28 @@ STATIC
 VOID
 ShowLog ()
 {
-  CHAR8 *Line = mLog;
+  CHAR8 *Line    = mLog;
+  UINTN  Regions = 0;
 
   gST->ConOut->ClearScreen (gST->ConOut);
 
-  // One line at a time: AsciiPrint's buffer is far smaller than the log
+  // One line at a time: AsciiPrint's buffer is far smaller than the log. The memory map rows
+  // (they start with an address) would push everything else off the screen, so they are only
+  // counted here.
   for (CHAR8 *p = mLog; *p != '\0'; p++) {
     if (*p == '\n') {
       *p = '\0';
-      AsciiPrint ("%a\n", Line);
+      if (Line[0] == '0' && Line[1] == '0') {
+        Regions++;
+      } else {
+        if (Regions != 0) {
+          AsciiPrint ("(%d memory map regions)\n", Regions);
+          Regions = 0;
+        }
+
+        AsciiPrint ("%a\n", Line);
+      }
+
       *p   = '\n';
       Line = p + 1;
     }
@@ -299,31 +313,55 @@ StartPayloadLoader ()
   }
 }
 
+//
+// X01A bring-up: say each step on screen (and in the debug log) before taking it, so a hang
+// shows where it happened.
+//
+STATIC
+VOID
+Step (
+  IN CONST CHAR8 *Name)
+{
+  DEBUG ((EFI_D_ERROR, "XnuLoader: %a\n", Name));
+  AsciiPrint ("XnuLoader: %a\n", Name);
+}
+
 VOID
 XnuLoaderMain ()
 {
   EFI_TIME Time;
 
+  gST->ConOut->ClearScreen (gST->ConOut);
+  Step ("start");
+
   // Normally does not return
+  Step ("payload loader");
   StartPayloadLoader ();
 
+  Step ("no loader.efi in the payload, stage 0");
   mLog = AllocateZeroPool (LOG_SIZE);
   if (mLog != NULL) {
     Log ("== XNULOADER LOG v1 ==\n");
 
+    Step ("time");
     if (!EFI_ERROR (gRT->GetTime (&Time, NULL))) {
       Log ("time=%04d-%02d-%02d %02d:%02d:%02d\n", Time.Year, Time.Month, Time.Day, Time.Hour, Time.Minute, Time.Second);
     }
 
     FlushLog ();
+    Step ("cpu");
     LogCpu ();
     FlushLog ();
+    Step ("display");
     LogDisplay ();
     FlushLog ();
+    Step ("memmap");
     LogMemoryMap ();
     FlushLog ();
+    Step ("payload");
     LogPayload ();
     FlushLog ();
+    Step ("persistence");
     LogPersistence ();
     Log ("== END ==\n");
     FlushLog ();

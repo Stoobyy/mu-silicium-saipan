@@ -13,12 +13,10 @@ git -C "$MU" submodule update --init --recursive
 cp -r files/Silicon files/Platforms files/Resources "$MU/"
 mkdir -p "$MU/Binaries/x01a" && cp -r files/Binaries/x01a/. "$MU/Binaries/x01a/"
 if [ $HAKIOS = 1 ]; then
-  PATCH="$PWD/hakios/mu-silicium.patch"
-  if git -C "$MU" apply --check --whitespace=nowarn "$PATCH" 2>/dev/null; then
-    git -C "$MU" apply --whitespace=nowarn "$PATCH"
-  else
-    git -C "$MU" apply --check --reverse --whitespace=nowarn "$PATCH"   # already applied
-  fi
-  cp hakios/XnuLoader.c hakios/XnuLoader.h "$MU/Silicon/Silicium/SiliciumPkg/Library/BootManagerLib/"
+  # start from clean copies of the files the patch touches, so re-running works
+  git -C "$MU" checkout -q -- BootShim/BootShim.S Silicon/Silicium/SiliciumPkg/Library/BootManagerLib
+  git -C "$MU" apply --whitespace=nowarn "$PWD/hakios/mu-silicium.patch"
+  # our BootManager.c: the patch's, plus the XNU loader hook in PriorityBoot
+  cp hakios/BootManager.c hakios/XnuLoader.c hakios/XnuLoader.h "$MU/Silicon/Silicium/SiliciumPkg/Library/BootManagerLib/"
 fi
 echo "apply.sh: done; next: cd $MU && python3 build_uefi.py -d x01a"
