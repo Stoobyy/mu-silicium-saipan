@@ -1,0 +1,49 @@
+--- a/xnu/files/osfmk/arm64/gic_v3_irq.c
++++ b/xnu/files/osfmk/arm64/gic_v3_irq.c
+@@ -72,7 +72,14 @@
+ 
+ #define GIC_SGI_SIGNAL          0           /* cpu_signal(): another processor wants this one's attention */
+ #define GIC_SGI_STOP            1           /* psci_smp_stop_here(): the system is going back to the boot loader */
+-#define GIC_INTID_VTIMER        27          /* EL1 virtual timer PPI */
++/*
++ * EL1 virtual timer PPI: 27 on redwood, as the architecture suggests, but the SoC decides. On the
++ * BALMUDA Phone (SM7250) its device tree has the timer on PPI 3, INTID 19. Boot-arg vtimer_intid=N
++ * (16 to 31) says which; the loader passes it for the phones that need it.
++ */
++static uint32_t gic_intid_vtimer = 27;
++static bool gic_vtimer_from_bootarg;    /* (then the timer is the kernel's alone, and goes quiet on the way back) */
++#define GIC_INTID_VTIMER        gic_intid_vtimer
+ #define GIC_INTID_SPI_MIN       32
+ #define GIC_INTID_SPURIOUS_MIN  1020
+ #define GIC_SPI_MOST            48          /* attached at a time */
+@@ -362,6 +369,16 @@
+ 		__builtin_arm_isb(ISB_SY);
+ 		gic_active_iar[cpu] = 0;
+ 	}
++	/*
++	 * A timer on a PPI the firmware does not own (vtimer_intid=, the BALMUDA Phone's 19) must not
++	 * go on firing under it: UEFI's GIC driver takes it, calls it spurious, and takes it again.
++	 */
++	if (gic_vtimer_from_bootarg && gicr_cpu_base[cpu] != 0) {
++		__builtin_arm_wsr64("CNTV_CTL_EL0", 0);
++		__builtin_arm_isb(ISB_SY);
++		gic_write32(gicr_cpu_base[cpu] + GICR_ICENABLER0, 1u << GIC_INTID_VTIMER);
++		gic_write32(gicr_cpu_base[cpu] + GICR_ICPENDR0, 1u << GIC_INTID_VTIMER);
++	}
+ }
+ 
+ /*
+@@ -418,6 +435,13 @@
+ {
+ 	int cpu = cpu_number();
+ 	vm_offset_t gicr;
++	uint32_t intid;
++
++	if (cpu == 0 && PE_parse_boot_argn("vtimer_intid", &intid, sizeof(intid)) && intid >= 16 && intid < 32) {
++		gic_intid_vtimer = intid;
++		gic_vtimer_from_bootarg = true;
++	}
++
+ 	uint32_t mine = 1u << GIC_INTID_VTIMER;
+ 
+ 	if (gicd_base == 0) {

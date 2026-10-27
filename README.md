@@ -82,6 +82,11 @@ tools/build_loader.sh /path/to/hackios-xnu-kernel ~/Mu-Silicium out/xnu-usb.img
 fastboot boot out/xnu-usb.img      # then: fastboot getvar product  ->  xnuloader
 ```
 
+`hakios/xnu-x01a.patch` is the kernel side (against HakiOS's `xnu/files`): the SM7250 has the
+architected timer on PPIs 1, 2, 3, 0, so the virtual timer is INTID 19, not 27. The kernel takes
+it from `vtimer_intid=`, which the loader passes on this phone, and stops that timer on the way
+back to UEFI. With it, iOS 16.5 boots to the Apple logo here.
+
 The loader writes its log to the raw `logdump` partition, as on the POCO. On the X01A that
 partition is 64 MB and was all zeros; back it up first if yours isn't.
 
