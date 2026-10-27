@@ -5,7 +5,8 @@ Upstream has no package for this SoC, so this adds one, plus the first device on
 (Kyocera X01A).
 
 Status: boots on the X01A with `fastboot boot`. With HakiOS on top (hakios/), iOS 16.5 boots to the
-home screen from RAM, single core, software rendering, no touch yet.
+home screen from RAM on all 8 cores, with touch and the three buttons working. Rendering is in
+software; no sound, Wi-Fi or cellular.
 
 ## What's here
 
@@ -86,6 +87,20 @@ fastboot boot out/xnu-usb.img      # then: fastboot getvar product  ->  xnuloade
 architected timer on PPIs 1, 2, 3, 0, so the virtual timer is INTID 19, not 27. The kernel takes
 it from `vtimer_intid=`, which the loader passes on this phone, and stops that timer on the way
 back to UEFI. With it, iOS 16.5 boots to the Apple logo here.
+
+Touch and buttons are in the same patch. `bsd/dev/hakios.ilitek.c` is new: the Ilitek ILI7807S on
+I2C at 0x41. The bus's serial engine is set up for GPI DMA only, so for now it reads the chip by
+driving GPIO 6 and 7 by hand, polled from the interrupt line's latched edge. `hakios.buttons.c`
+gets a board table: power and volume up on the PM8150's power-on block, volume down on GPIO5 of
+the PM8150L. Both turn on with `hakios_board=x01a`, which the loader adds on this phone.
+
+```sh
+tools/apply_kernel.sh /path/to/hackios-xnu-kernel      # before or after its xnu/apply.sh
+```
+
+Kernel arguments that work here: `cpus=8 touchscreen=1 buttons=1 -v`. While a kernel runs on core 0
+leave USB alone (no `fastboot getvar` polling), or Windows resets the device and UEFI's USB driver
+can't recover once the kernel hands back.
 
 The loader writes its log to the raw `logdump` partition, as on the POCO. On the X01A that
 partition is 64 MB and was all zeros; back it up first if yours isn't.

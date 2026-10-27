@@ -1,7 +1,7 @@
 diff --git a/loader.c b/loader.c
 old mode 100755
 new mode 100644
-index ab5a781..1d2a2c4
+index ab5a781..8fe1abc
 --- a/loader.c
 +++ b/loader.c
 @@ -524,6 +524,7 @@ struct platform {
@@ -12,7 +12,7 @@ index ab5a781..1d2a2c4
  };
  
  static const struct platform platform_qemu_virt = {
-@@ -551,6 +552,20 @@ static const struct platform platform_redwood = {
+@@ -551,6 +552,23 @@ static const struct platform platform_redwood = {
  	.small_cores = 0x0f,
  };
  
@@ -26,14 +26,17 @@ index ab5a781..1d2a2c4
 +	.cores = 8, .core_shift = 8,
 +	/* Cores 0-5 are Kryo 475 Silver (Cortex-A55, 1.8 GHz), 6-7 Kryo 475 Gold (Cortex-A76, 2.2/2.3 GHz). */
 +	.small_cores = 0x3f,
-+	/* the architected timer is on PPIs 1, 2, 3, 0 here: the virtual one is INTID 19, not 27 */
-+	.kernel_args = "vtimer_intid=19 ",
++	/*
++	 * The architected timer is on PPIs 1, 2, 3, 0 here: the virtual one is INTID 19, not 27. And
++	 * the board's drivers are told which phone this is (touch screen and keys: hakios_board_is()).
++	 */
++	.kernel_args = "vtimer_intid=19 hakios_board=x01a ",
 +};
 +
  /* ------------------------------------------------------------------------ */
  
  static void
-@@ -2432,7 +2447,7 @@ wdt_arm(void)
+@@ -2432,7 +2450,7 @@ wdt_arm(void)
  {
  	uint64_t ctl = 0, since = 0;
  
@@ -42,7 +45,7 @@ index ab5a781..1d2a2c4
  		return; /* SMC is not routed anywhere useful on QEMU virt */
  	}
  	uint64_t st = smc_call(VIRT_WDT_STATUS, 0, 0, &ctl, &since);
-@@ -2977,6 +2992,11 @@ run_kernel(int have_checkpoint, uint64_t checkpoint)
+@@ -2977,6 +2995,11 @@ run_kernel(int have_checkpoint, uint64_t checkpoint)
  			ba->commandLine[n++] = *c;
  		}
  	}
@@ -54,7 +57,7 @@ index ab5a781..1d2a2c4
  	if (wdt_armed) {
  		for (const char *c = "hv_wdt_pet=1 "; *c && n < BOOT_LINE_LENGTH - 1; c++) {
  			ba->commandLine[n++] = *c;
-@@ -3696,6 +3716,29 @@ fb_command(char *cmd)
+@@ -3696,6 +3719,29 @@ fb_command(char *cmd)
  			staged_data = (const char *)(uintptr_t)SCREEN.base;
  			staged_len = (uint64_t)SCREEN.stride * SCREEN.height;
  			fb_reply("OKAY", "");
@@ -84,7 +87,7 @@ index ab5a781..1d2a2c4
  		} else if (starts_with(cmd, "oem recording")) {
  			/* stage what the kernel's display driver recorded (boot-arg rec_secs) */
  			if (recording_data == NULL) {
-@@ -3932,6 +3975,8 @@ efi_main(efi_handle image, efi_system_table *st)
+@@ -3932,6 +3978,8 @@ efi_main(efi_handle image, efi_system_table *st)
  		SCREEN.stride = GOP->mode->info->pixels_per_scanline * 4;
  		if (SCREEN.base == 0xE1000000ULL) {
  			PLAT = &platform_redwood;
