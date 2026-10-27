@@ -3,3 +3,4 @@
 *.depex binary
 *.dtb binary
 files/Binaries/**/RawFiles/* -text
+*.patch -text
