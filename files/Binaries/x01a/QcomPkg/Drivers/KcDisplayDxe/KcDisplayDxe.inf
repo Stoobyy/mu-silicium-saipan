@@ -1,0 +1,14 @@
+[Defines]
+  INF_VERSION                    = 0x0001001B
+  BASE_NAME                      = KcDisplayDxe
+  FILE_GUID                      = 391150FF-1409-4E4F-8319-C5543AE1FC6F
+  MODULE_TYPE                    = DXE_DRIVER
+  VERSION_STRING                 = 1.0
+  ENTRY_POINT                    = EfiEntry
+
+[Binaries.AARCH64]
+  DXE_DEPEX|KcDisplayDxe.depex|*
+  PE32|KcDisplayDxe.efi|*
+
+[Depex]
+  TRUE

@@ -1,0 +1,383 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PanelName>kc_boe_1080p</PanelName>
+<PanelDescription>BOE FHD Video Mode Panel (1080x1920 24bpp)</PanelDescription>
+<Group id="Active Timing">
+ <HorizontalActive units="Dot Clocks">1080</HorizontalActive>
+ <HorizontalFrontPorch units="Dot Clocks">24</HorizontalFrontPorch>
+ <HorizontalBackPorch units="Dot Clocks">24</HorizontalBackPorch>
+ <HorizontalSyncPulse units="Dot Clocks">4</HorizontalSyncPulse>
+ <HorizontalSyncSkew units="Dot Clocks">0</HorizontalSyncSkew>
+ <HorizontalLeftBorder units="Dot Clocks">0</HorizontalLeftBorder>
+ <HorizontalRightBorder units="Dot Clocks">0</HorizontalRightBorder>
+ <VerticalActive units="Dot Clocks">1920</VerticalActive>
+ <VerticalFrontPorch units="Lines">80</VerticalFrontPorch>
+ <VerticalBackPorch units="Lines">35</VerticalBackPorch>
+ <VerticalSyncPulse units="Lines">4</VerticalSyncPulse>
+ <VerticalSyncSkew units="Lines">0</VerticalSyncSkew>
+ <VerticalTopBorder units="Lines">0</VerticalTopBorder>
+ <VerticalBottomBorder units="Lines">0</VerticalBottomBorder>
+ <InvertDataPolarity>False</InvertDataPolarity>
+ <InvertVsyncPolairty>False</InvertVsyncPolairty>
+ <InvertHsyncPolarity>False</InvertHsyncPolarity>
+ <BorderColor>0x0</BorderColor>
+</Group>
+<Group id="Display Interface">
+ <InterfaceType units="QDI_DisplayConnectType">8</InterfaceType>
+ <InterfaceColorFormat units="QDI_PixelFormatType">3</InterfaceColorFormat>
+</Group>
+<Group id="DSI Interface">
+ <DSIChannelId units="DSI_Channel_IDType">1</DSIChannelId>
+ <DSIVirtualId units="DSI_Display_VCType">0</DSIVirtualId>
+ <DSIColorFormat units="DSI_ColorFormatType">36</DSIColorFormat>
+ <DSITrafficMode units="DSI_TrafficModeType">1</DSITrafficMode>
+ <DSILanes units="integer">4</DSILanes>
+ <DSIClockHSForceRequest>1</DSIClockHSForceRequest>
+   <DSIHsaHseAfterVsVe units='Bool'>False</DSIHsaHseAfterVsVe>
+   <DSILowPowerModeInHFP units='Bool'>False</DSILowPowerModeInHFP>
+   <DSILowPowerModeInHBP units='Bool'>False</DSILowPowerModeInHBP>
+   <DSILowPowerModeInHSA units='Bool'>False</DSILowPowerModeInHSA>
+ <DSILowPowerModeInBLLPEOF units='Bool'>True</DSILowPowerModeInBLLPEOF>
+   <DSILowPowerModeInBLLP units='Bool'>True</DSILowPowerModeInBLLP>
+   <DSIRefreshRate units='integer Q16.16'>0x3C0000</DSIRefreshRate>
+   <DSIPhyDCDCMode units='Bool'>True</DSIPhyDCDCMode>
+ <DSIControllerMapping>
+  00 
+ </DSIControllerMapping>
+</Group>
+<DSIInitSequence>
+29 FF 78 07 01
+29 00 62
+29 01 11
+29 02 00
+29 03 00
+29 04 00
+29 05 00
+29 06 00
+29 07 00
+29 08 A9
+29 09 0A
+29 0A 30
+29 0B 00
+29 0C 00
+29 0D 00
+29 0E 04
+29 31 07
+29 32 07
+29 33 07
+29 34 07
+29 35 07
+29 36 07
+29 37 07
+29 38 41
+29 39 41
+29 3A 02
+29 3B 25
+29 3C 28
+29 3D 28
+29 3E 30
+29 3F 2F
+29 40 2E
+29 41 10
+29 42 12
+29 43 2C
+29 44 40
+29 45 40
+29 46 01
+29 47 00
+29 48 08
+29 49 07
+29 4A 07
+29 4B 07
+29 4C 07
+29 4D 07
+29 4E 07
+29 4F 07
+29 50 41
+29 51 41
+29 52 02
+29 53 25
+29 54 28
+29 55 28
+29 56 30
+29 57 2F
+29 58 2E
+29 59 11
+29 5A 13
+29 5B 2C
+29 5C 40
+29 5D 40
+29 5E 01
+29 5F 00
+29 60 09
+29 61 07
+29 62 07
+29 63 07
+29 64 07
+29 65 07
+29 66 07
+29 67 07
+29 68 41
+29 69 41
+29 6A 02
+29 6B 25
+29 6C 28
+29 6D 28
+29 6E 30
+29 6F 2F
+29 70 2E
+29 71 13
+29 72 11
+29 73 2C
+29 74 40
+29 75 40
+29 76 01
+29 77 00
+29 78 09
+29 79 07
+29 7A 07
+29 7B 07
+29 7C 07
+29 7D 07
+29 7E 07
+29 7F 07
+29 80 41
+29 81 41
+29 82 02
+29 83 25
+29 84 28
+29 85 28
+29 86 30
+29 87 2F
+29 88 2E
+29 89 12
+29 8A 10
+29 8B 2C
+29 8C 40
+29 8D 40
+29 8E 01
+29 8F 00
+29 90 08
+29 A0 4C
+29 A1 4A
+29 A2 00
+29 A3 00
+29 A7 10
+29 AA 00
+29 AB 00
+29 AC 00
+29 AE 00
+29 B0 20
+29 B1 00
+29 B2 02
+29 B3 04
+29 B4 05
+29 B5 00
+29 B6 00
+29 B7 00
+29 B8 00
+29 C0 0C
+29 C1 05
+29 C2 00
+29 C3 00
+29 C4 00
+29 C5 2B
+29 C6 00
+29 C7 28
+29 C8 00
+29 C9 00
+29 CA 01
+29 D0 01
+29 D1 00
+29 D2 10
+29 D3 41
+29 D4 89
+29 D5 06
+29 D6 49
+29 D7 40
+29 D8 09
+29 D9 96
+29 DA AA
+29 DB AA
+29 DC 8A
+29 DD A8
+29 DE 05
+29 DF 42
+29 E0 1E
+29 E1 68
+29 E2 05
+29 E3 11
+29 E4 42
+29 E5 4B
+29 E6 2A
+29 E7 0C
+29 E8 00
+29 E9 00
+29 EA 00
+29 EB 00
+29 EC 80
+29 ED 56
+29 EE 00
+29 EF 32
+29 F0 00
+29 F1 C0
+29 F2 FF
+29 F3 FF
+29 F4 54
+29 FF 78 07 02
+29 40 0A
+29 41 00
+29 42 07
+29 43 40
+29 53 07
+29 1B 02
+29 46 22
+29 47 03
+29 4F 01
+29 76 1F
+29 80 35
+29 06 84
+29 08 00
+29 0E 27
+29 0F 28
+29 FF 78 07 05
+29 1F 00
+29 72 56
+29 74 56
+29 76 51
+29 7A 51
+29 7B 7E
+29 7C 7E
+29 46 55
+29 47 75
+29 B5 55
+29 B7 75
+29 C6 1B
+29 56 FF
+29 FF 78 07 06
+29 C0 80
+29 C1 17
+29 C3 06
+29 13 13
+29 FF 78 07 08
+29 E0 00 00 27 5D 00 A3 D3 F7 15 2F 5A 97 29 C6 0D 41 2A 75 B0 D5 3F 06 2A 52 3F 6C 8E BD 0F D8 D9
+29 E1 00 00 27 5D 00 A3 D3 F7 15 2F 5A 97 29 C6 0D 41 2A 75 B0 D5 3F 06 2A 52 3F 6C 8E BD 0F D8 D9
+29 FF 78 07 0B
+29 94 88
+29 95 1F
+29 96 06
+29 97 06
+29 98 CB
+29 99 CB
+29 9A 08
+29 9B 52
+29 9C 06
+29 9D 06
+29 9E D0
+29 9F D0
+29 AA 02
+29 AB E0
+29 FF 78 07 0C
+29 80 24
+29 81 3B
+29 82 23
+29 83 2D
+29 84 23
+29 85 28
+29 86 23
+29 87 2F
+29 88 24
+29 89 39
+29 8A 23
+29 8B 31
+29 8C 23
+29 8D 29
+29 8E 23
+29 8F 32
+29 90 23
+29 91 2E
+29 92 24
+29 93 33
+29 94 24
+29 95 38
+29 96 24
+29 97 3D
+29 98 24
+29 99 36
+29 9A 24
+29 9B 34
+29 9C 24
+29 9D 3E
+29 9E 23
+29 9F 2C
+29 A0 23
+29 A1 2A
+29 A2 24
+29 A3 37
+29 A4 23
+29 A5 2B
+29 A6 24
+29 A7 35
+29 A8 24
+29 A9 40
+29 AA 24
+29 AB 3F
+29 AC 24
+29 AD 3A
+29 AE 24
+29 AF 3C
+29 B0 23
+29 B1 30
+29 FF 78 07 0E
+29 00 A3
+29 02 0F
+29 04 06
+29 13 04
+29 C0 12
+29 B0 21
+29 41 12
+29 43 12
+29 40 07
+29 45 0A
+29 46 F1
+29 47 00
+29 49 F0
+29 C8 78
+29 C9 78
+29 4D EF
+29 50 00
+29 4B 18
+29 05 20
+29 E0 0A
+29 E2 07
+29 E3 40
+29 E5 07
+29 FF 78 07 1E
+29 C9 02
+29 C0 1F
+29 C1 28
+29 C2 38
+29 C3 38
+29 C4 16
+29 C7 00
+29 FF 78 07 00
+29 35 00
+05 11 00
+ff 40
+05 29 00
+ff 3C
+</DSIInitSequence>
+<DSITermSequence>
+ 05 28 00
+ FF AA
+ 05 10 00
+ FF 78
+</DSITermSequence>
+<Group id='Backlight Configuration'>
+ <BacklightType units='MDP_Panel_BacklightType'>1</BacklightType>
+ <BacklightPmicControlType units='MDP_PmicBacklightControlType'>2</BacklightPmicControlType>
+ <DisplayResetInfo>0 1000 20000 60000 0</DisplayResetInfo>
+</Group>
+
+
+
+
